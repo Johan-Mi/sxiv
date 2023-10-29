@@ -49,6 +49,8 @@ void parse_options(int argc, char **argv)
 	progname = strrchr(argv[0], '/');
 	progname = progname ? progname + 1 : argv[0];
 
+	_options.private_mode = true;
+
 	_options.from_stdin = false;
 	_options.to_stdout = false;
 	_options.recursive = false;

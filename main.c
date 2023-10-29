@@ -817,6 +817,15 @@ void setup_signal(int sig, void (*handler)(int sig))
 		error(EXIT_FAILURE, errno, "signal %d", sig);
 }
 
+GLogWriterOutput writer_func(
+  GLogLevelFlags log_level,
+  const GLogField* fields,
+  gsize n_fields,
+  gpointer user_data
+) {
+	return G_LOG_WRITER_HANDLED;
+}
+
 int main(int argc, char **argv)
 {
 	int i, start;
@@ -826,6 +835,8 @@ int main(int argc, char **argv)
 	const char *homedir, *dsuffix = "";
 	struct stat fstats;
 	r_dir_t dir;
+
+	g_log_set_writer_func(writer_func, NULL, NULL);
 
 	setup_signal(SIGCHLD, sigchld);
 	setup_signal(SIGPIPE, SIG_IGN);

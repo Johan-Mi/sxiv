@@ -55,23 +55,7 @@ char* tns_cache_filepath(const char *filepath)
 
 Imlib_Image tns_cache_load(const char *filepath, bool *outdated)
 {
-	char *cfile;
-	struct stat cstats, fstats;
-	Imlib_Image im = NULL;
-
-	if (stat(filepath, &fstats) < 0)
-		return NULL;
-
-	if ((cfile = tns_cache_filepath(filepath)) != NULL) {
-		if (stat(cfile, &cstats) == 0) {
-			if (cstats.st_mtime == fstats.st_mtime)
-				im = imlib_load_image(cfile);
-			else
-				*outdated = true;
-		}
-		free(cfile);
-	}
-	return im;
+	return NULL;
 }
 
 void tns_cache_write(Imlib_Image im, const char *filepath, bool force)
@@ -334,8 +318,6 @@ bool tns_load(tns_t *tns, int n, bool force, bool cache_only)
 #endif
 		im = tns_scale_down(im, maxwh);
 		imlib_context_set_image(im);
-		if (imlib_image_get_width() == maxwh || imlib_image_get_height() == maxwh)
-			tns_cache_write(im, file->path, true);
 	}
 
 	if (cache_only) {

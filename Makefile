@@ -3,7 +3,7 @@ version = 26
 srcdir = .
 VPATH = $(srcdir)
 
-PREFIX = /usr/local
+PREFIX = ~/.local
 MANPREFIX = $(PREFIX)/share/man
 
 # autoreload backend: inotify/nop

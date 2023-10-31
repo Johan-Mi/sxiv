@@ -53,11 +53,6 @@ char* tns_cache_filepath(const char *filepath)
 	return cfile;
 }
 
-Imlib_Image tns_cache_load(const char *filepath, bool *outdated)
-{
-	return NULL;
-}
-
 void tns_clean_cache(tns_t *tns)
 {
 	int dirlen;

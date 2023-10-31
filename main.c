@@ -701,7 +701,7 @@ void run(void)
 		{
 			if (load_thumb) {
 				set_timeout(redraw, TO_REDRAW_THUMBS, false);
-				if (!tns_load(&tns, tns.loadnext, false, false)) {
+				if (!tns_load(&tns, tns.loadnext, false)) {
 					remove_file(tns.loadnext, false);
 					tns.dirty = true;
 				}
@@ -709,7 +709,7 @@ void run(void)
 					redraw();
 			} else if (init_thumb) {
 				set_timeout(redraw, TO_REDRAW_THUMBS, false);
-				if (!tns_load(&tns, tns.initnext, false, true))
+				if (!tns_load(&tns, tns.initnext, true))
 					remove_file(tns.initnext, false);
 			} else {
 				xfd = ConnectionNumber(win.env.dpy);
@@ -936,7 +936,7 @@ int main(int argc, char **argv)
 	if (options->thumb_mode) {
 		mode = MODE_THUMB;
 		tns_init(&tns, files, &filecnt, &fileidx, &win);
-		while (!tns_load(&tns, fileidx, false, false))
+		while (!tns_load(&tns, fileidx, false))
 			remove_file(fileidx, false);
 	} else {
 		mode = MODE_IMAGE;

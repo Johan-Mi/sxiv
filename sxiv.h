@@ -336,7 +336,7 @@ struct tns {
 
 void tns_init(tns_t*, fileinfo_t*, const int*, int*, win_t*);
 CLEANUP void tns_free(tns_t*);
-bool tns_load(tns_t*, int, bool, bool);
+bool tns_load(tns_t*, int, bool);
 void tns_unload(tns_t*, int);
 void tns_render(tns_t*);
 void tns_mark(tns_t*, int, bool);

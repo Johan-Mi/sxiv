@@ -95,7 +95,7 @@ Imlib_Image tns_scale_down(Imlib_Image im, int dim)
 	return im;
 }
 
-bool tns_load(tns_t *tns, int n, bool force, bool cache_only)
+bool tns_load(tns_t *tns, int n, bool cache_only)
 {
 	int maxwh = thumb_sizes[ARRLEN(thumb_sizes)-1];
 	bool cache_hit = false;

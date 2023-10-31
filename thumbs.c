@@ -58,50 +58,6 @@ Imlib_Image tns_cache_load(const char *filepath, bool *outdated)
 	return NULL;
 }
 
-void tns_cache_write(Imlib_Image im, const char *filepath, bool force)
-{
-	char *cfile, *dirend;
-	struct stat cstats, fstats;
-	struct utimbuf times;
-	Imlib_Load_Error err;
-
-	if (options->private_mode)
-		return;
-
-	if (stat(filepath, &fstats) < 0)
-		return;
-
-	if ((cfile = tns_cache_filepath(filepath)) != NULL) {
-		if (force || stat(cfile, &cstats) < 0 ||
-		    cstats.st_mtime != fstats.st_mtime)
-		{
-			if ((dirend = strrchr(cfile, '/')) != NULL) {
-				*dirend = '\0';
-				if (r_mkdir(cfile) == -1) {
-					error(0, errno, "%s", cfile);
-					goto end;
-				}
-				*dirend = '/';
-			}
-			imlib_context_set_image(im);
-			if (imlib_image_has_alpha()) {
-				imlib_image_set_format("png");
-			} else {
-				imlib_image_set_format("jpg");
-				imlib_image_attach_data_value("quality", NULL, 90, NULL);
-			}
-			imlib_save_image_with_error_return(cfile, &err);
-			if (err)
-				goto end;
-			times.actime = fstats.st_atime;
-			times.modtime = fstats.st_mtime;
-			utime(cfile, &times);
-		}
-end:
-		free(cfile);
-	}
-}
-
 void tns_clean_cache(tns_t *tns)
 {
 	int dirlen;
@@ -211,7 +167,6 @@ bool tns_load(tns_t *tns, int n, bool force, bool cache_only)
 {
 	int maxwh = thumb_sizes[ARRLEN(thumb_sizes)-1];
 	bool cache_hit = false;
-	char *cfile;
 	thumb_t *t;
 	fileinfo_t *file;
 	Imlib_Image im = NULL;
@@ -228,82 +183,6 @@ bool tns_load(tns_t *tns, int n, bool force, bool cache_only)
 		imlib_context_set_image(t->im);
 		imlib_free_image();
 		t->im = NULL;
-	}
-
-	if (!force) {
-		if ((im = tns_cache_load(file->path, &force)) != NULL) {
-			imlib_context_set_image(im);
-			if (imlib_image_get_width() < maxwh &&
-			    imlib_image_get_height() < maxwh)
-			{
-				if ((cfile = tns_cache_filepath(file->path)) != NULL) {
-					unlink(cfile);
-					free(cfile);
-				}
-				imlib_free_image_and_decache();
-				im = NULL;
-			} else {
-				cache_hit = true;
-			}
-#if HAVE_LIBEXIF
-		} else if (!force && !options->private_mode) {
-			int pw = 0, ph = 0, w, h, x = 0, y = 0;
-			bool err;
-			float zw, zh;
-			ExifData *ed;
-			ExifEntry *entry;
-			ExifContent *ifd;
-			ExifByteOrder byte_order;
-			int tmpfd;
-			char tmppath[] = "/tmp/sxiv-XXXXXX";
-			Imlib_Image tmpim;
-
-			if ((ed = exif_data_new_from_file(file->path)) != NULL) {
-				if (ed->data != NULL && ed->size > 0 &&
-				    (tmpfd = mkstemp(tmppath)) >= 0)
-				{
-					err = write(tmpfd, ed->data, ed->size) != ed->size;
-					close(tmpfd);
-
-					if (!err && (tmpim = imlib_load_image(tmppath)) != NULL) {
-						byte_order = exif_data_get_byte_order(ed);
-						ifd = ed->ifd[EXIF_IFD_EXIF];
-						entry = exif_content_get_entry(ifd, EXIF_TAG_PIXEL_X_DIMENSION);
-						if (entry != NULL)
-							pw = exif_get_long(entry->data, byte_order);
-						entry = exif_content_get_entry(ifd, EXIF_TAG_PIXEL_Y_DIMENSION);
-						if (entry != NULL)
-							ph = exif_get_long(entry->data, byte_order);
-
-						imlib_context_set_image(tmpim);
-						w = imlib_image_get_width();
-						h = imlib_image_get_height();
-
-						if (pw > w && ph > h && (pw - ph >= 0) == (w - h >= 0)) {
-							zw = (float) pw / (float) w;
-							zh = (float) ph / (float) h;
-							if (zw < zh) {
-								pw /= zh;
-								x = (w - pw) / 2;
-								w = pw;
-							} else if (zw > zh) {
-								ph /= zw;
-								y = (h - ph) / 2;
-								h = ph;
-							}
-						}
-						if (w >= maxwh || h >= maxwh) {
-							if ((im = imlib_create_cropped_image(x, y, w, h)) == NULL)
-								error(EXIT_FAILURE, ENOMEM, NULL);
-						}
-						imlib_free_image_and_decache();
-					}
-					unlink(tmppath);
-				}
-				exif_data_unref(ed);
-			}
-#endif
-		}
 	}
 
 	if (im == NULL) {

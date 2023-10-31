@@ -34,39 +34,9 @@ void exif_auto_orientate(const fileinfo_t*);
 #endif
 Imlib_Image img_open(const fileinfo_t*);
 
-static char *cache_dir;
-
-void tns_clean_cache(tns_t *tns)
-{
-	int dirlen;
-	char *cfile, *filename;
-	r_dir_t dir;
-
-	if (r_opendir(&dir, cache_dir, true) < 0) {
-		error(0, errno, "%s", cache_dir);
-		return;
-	}
-
-	dirlen = strlen(cache_dir);
-
-	while ((cfile = r_readdir(&dir, false)) != NULL) {
-		filename = cfile + dirlen;
-		if (access(filename, F_OK) < 0) {
-			if (unlink(cfile) < 0)
-				error(0, errno, "%s", cfile);
-		}
-		free(cfile);
-	}
-	r_closedir(&dir);
-}
-
-
 void tns_init(tns_t *tns, fileinfo_t *files, const int *cnt, int *sel,
               win_t *win)
 {
-	int len;
-	const char *homedir, *dsuffix = "";
-
 	if (cnt != NULL && *cnt > 0) {
 		tns->thumbs = (thumb_t*) emalloc(*cnt * sizeof(thumb_t));
 		memset(tns->thumbs, 0, *cnt * sizeof(thumb_t));
@@ -83,19 +53,6 @@ void tns_init(tns_t *tns, fileinfo_t *files, const int *cnt, int *sel,
 
 	tns->zl = THUMB_SIZE;
 	tns_zoom(tns, 0);
-
-	if ((homedir = getenv("XDG_CACHE_HOME")) == NULL || homedir[0] == '\0') {
-		homedir = getenv("HOME");
-		dsuffix = "/.cache";
-	}
-	if (homedir != NULL) {
-		free(cache_dir);
-		len = strlen(homedir) + strlen(dsuffix) + 6;
-		cache_dir = (char*) emalloc(len);
-		snprintf(cache_dir, len, "%s%s/sxiv", homedir, dsuffix);
-	} else {
-		error(0, 0, "Cache directory not found");
-	}
 }
 
 CLEANUP void tns_free(tns_t *tns)
@@ -112,9 +69,6 @@ CLEANUP void tns_free(tns_t *tns)
 		free(tns->thumbs);
 		tns->thumbs = NULL;
 	}
-
-	free(cache_dir);
-	cache_dir = NULL;
 }
 
 Imlib_Image tns_scale_down(Imlib_Image im, int dim)

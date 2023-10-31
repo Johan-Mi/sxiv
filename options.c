@@ -69,7 +69,6 @@ void parse_options(int argc, char **argv)
 
 	_options.quiet = false;
 	_options.thumb_mode = false;
-	_options.clean_cache = false;
 
 	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:opqrS:s:tvZz:")) != -1) {
 		switch (opt) {
@@ -87,9 +86,6 @@ void parse_options(int argc, char **argv)
 				break;
 			case 'b':
 				_options.hide_bar = true;
-				break;
-			case 'c':
-				_options.clean_cache = true;
 				break;
 			case 'e':
 				n = strtol(optarg, &end, 0);

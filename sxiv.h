@@ -293,7 +293,6 @@ struct opt {
 	/* misc flags: */
 	bool quiet;
 	bool thumb_mode;
-	bool clean_cache;
 };
 
 extern const opt_t *options;
@@ -335,7 +334,6 @@ struct tns {
 	bool dirty;
 };
 
-void tns_clean_cache(tns_t*);
 void tns_init(tns_t*, fileinfo_t*, const int*, int*, win_t*);
 CLEANUP void tns_free(tns_t*);
 bool tns_load(tns_t*, int, bool, bool);

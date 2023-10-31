@@ -49,8 +49,6 @@ void parse_options(int argc, char **argv)
 	progname = strrchr(argv[0], '/');
 	progname = progname ? progname + 1 : argv[0];
 
-	_options.private_mode = true;
-
 	_options.from_stdin = false;
 	_options.to_stdout = false;
 	_options.recursive = false;
@@ -72,7 +70,7 @@ void parse_options(int argc, char **argv)
 	_options.quiet = false;
 	_options.thumb_mode = false;
 	_options.clean_cache = false;
-	_options.private_mode = false;
+	_options.private_mode = true;
 
 	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:opqrS:s:tvZz:")) != -1) {
 		switch (opt) {

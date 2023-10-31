@@ -36,23 +36,6 @@ Imlib_Image img_open(const fileinfo_t*);
 
 static char *cache_dir;
 
-char* tns_cache_filepath(const char *filepath)
-{
-	size_t len;
-	char *cfile = NULL;
-
-	if (*filepath != '/')
-		return NULL;
-	
-	if (strncmp(filepath, cache_dir, strlen(cache_dir)) != 0) {
-		/* don't cache images inside the cache directory! */
-		len = strlen(cache_dir) + strlen(filepath) + 2;
-		cfile = (char*) emalloc(len);
-		snprintf(cfile, len, "%s/%s", cache_dir, filepath + 1);
-	}
-	return cfile;
-}
-
 void tns_clean_cache(tns_t *tns)
 {
 	int dirlen;

@@ -70,7 +70,6 @@ void parse_options(int argc, char **argv)
 	_options.quiet = false;
 	_options.thumb_mode = false;
 	_options.clean_cache = false;
-	_options.private_mode = true;
 
 	while ((opt = getopt(argc, argv, "A:abce:fG:g:hin:N:opqrS:s:tvZz:")) != -1) {
 		switch (opt) {
@@ -127,9 +126,6 @@ void parse_options(int argc, char **argv)
 				break;
 			case 'o':
 				_options.to_stdout = true;
-				break;
-			case 'p':
-				_options.private_mode = true;
 				break;
 			case 'q':
 				_options.quiet = true;

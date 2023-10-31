@@ -294,7 +294,6 @@ struct opt {
 	bool quiet;
 	bool thumb_mode;
 	bool clean_cache;
-	bool private_mode;
 };
 
 extern const opt_t *options;
